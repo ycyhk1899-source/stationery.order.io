@@ -256,7 +256,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
               <input type="text" id="requester" placeholder="請輸入姓名">
             </div>
             <div>
-              <label>所屬部門 / 公司</label>
+              <label>客戶</label>
               <select id="department">
                 <option value="">請選擇</option>
                 <option>Office</option>
@@ -368,7 +368,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
           <option value="all">全部月份</option>
         </select>
         <select id="deptFilter" style="width:auto">
-          <option value="all">全部部門</option>
+          <option value="all">全部客戶</option>
           <option>Office</option>
           <option>Apple</option>
           <option>Go Pro</option>
@@ -418,6 +418,17 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
           <option value="已下單">已下單</option>
           <option value="已到貨">已到貨</option>
           <option value="已取消">已取消</option>
+        </select>
+        <select id="statusDeptFilter" style="width:auto">
+          <option value="all">全部部門</option>
+          <option>Office</option>
+          <option>Apple</option>
+          <option>Go Pro</option>
+          <option>Sennheiser</option>
+          <option>Sonova</option>
+          <option>Balluff</option>
+          <option>Lululemon</option>
+          <option>其他</option>
         </select>
         <select id="statusMonthFilter" style="width:auto">
           <option value="all">全部月份</option>
@@ -516,7 +527,7 @@ const DEFAULT_ITEMS = [
   {"id":32,"category":"文具","name":"兩層文件架","unit":"Piece"},
   {"id":33,"category":"文具","name":"文件架駁腳(短鐵柱)","unit":"Pack"},
   {"id":34,"category":"剪裁用品","name":"鐵鎅刀(細)","unit":"Piece"},
-  {"id":35,"category":"文具","name":"剪刀","unit":"Piece"},
+  {"id":35,"category":"剪裁用品","name":"剪刀","unit":"Piece"},
   {"id":36,"category":"剪裁用品","name":"大刀片(10片)","unit":"Piece"},
   {"id":37,"category":"剪裁用品","name":"細刀片(10片)","unit":"Tube"},
   {"id":38,"category":"剪裁用品","name":"大鎅刀","unit":"Piece"},
@@ -577,6 +588,7 @@ let monthFilter = 'all';
 let deptFilter = 'all';
 let statusFilter = 'all';
 let statusQueryFilter = 'all';
+let statusDeptFilter = 'all';
 let statusMonthFilter = 'all';
 let isLoggedIn = false;
 let selectedIds = new Set();
@@ -1181,6 +1193,9 @@ function renderStatusQuery() {
   if (statusMonthFilter !== 'all') {
     orders = orders.filter(o => getMonthKey(o.orderDate || new Date(o.timestamp).toISOString().slice(0,10)) === statusMonthFilter);
   }
+  if (statusDeptFilter !== 'all') {
+    orders = orders.filter(o => (o.department || '') === statusDeptFilter);
+  }
   if (statusQueryFilter !== 'all') {
     orders = orders.filter(o => (o.status || '待下單') === statusQueryFilter);
   }
@@ -1226,7 +1241,7 @@ function renderStatusQuery() {
           <span style="color:var(--muted);font-size:0.85rem">${date}</span>
         </div>
         <div style="font-size:0.9rem;margin-top:6px">
-          ${o.items.map(it => `${escapeHtml(it.name)} × ${it.qty} ${escapeHtml(it.unit)}`).join(' ')}
+          ${o.items.map(it => `${escapeHtml(it.name)} × ${it.qty} ${escapeHtml(it.unit)}`).join('　')}
         </div>
       </div>
     `;
@@ -1238,6 +1253,7 @@ document.getElementById('monthFilter').onchange = e => { monthFilter = e.target.
 document.getElementById('deptFilter').onchange = e => { deptFilter = e.target.value; selectedIds.clear(); renderRecords(); };
 document.getElementById('statusFilter').onchange = e => { statusFilter = e.target.value; selectedIds.clear(); renderRecords(); };
 document.getElementById('statusQueryFilter').onchange = e => { statusQueryFilter = e.target.value; renderStatusQuery(); };
+document.getElementById('statusDeptFilter').onchange = e => { statusDeptFilter = e.target.value; renderStatusQuery(); };
 document.getElementById('statusMonthFilter').onchange = e => { statusMonthFilter = e.target.value; renderStatusQuery(); };
 
 document.getElementById('refreshRecordsBtn').onclick = async () => {
@@ -1291,7 +1307,7 @@ document.getElementById('exportBtn').onclick = () => {
       csv += `"${month}","${date}","${o.requester||''}","${o.department||''}","${status}","${o.contact||''}","${(o.notes||'').replace(/"/g,'""')}","${it.name}","${it.qty}","${it.unit}"\n`;
     });
   });
-  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8'});
+  const blob = new Blob(['﻿' + csv], {type: 'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `文具下單明細_${new Date().toISOString().slice(0,10)}.csv`;
@@ -1347,7 +1363,7 @@ document.getElementById('exportMonthBtn').onclick = () => {
     }
   });
 
-  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8'});
+  const blob = new Blob(['﻿' + csv], {type: 'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `文具下單總計_${month}.csv`;
