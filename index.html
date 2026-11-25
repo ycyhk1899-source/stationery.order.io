@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文具下單系統</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card: #1a1d27;
+  --border: #2a2e3a;
+  --text: #e8eaed;
+  --muted: #9aa0a6;
+  --accent: #4f8cff;
+  --accent2: #00c853;
+  --warning: #ffb300;
+  --danger: #ff5252;
+  --radius: 12px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang HK", "Microsoft JhengHei", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.5;
+}
+header {
+  background: linear-gradient(135deg, #1a1d27, #252836);
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+h1 { margin: 0; font-size: 1.3rem; font-weight: 700; }
+h1 span { color: var(--accent); }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabs button {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 0.9rem;
+}
+.tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.login-info { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
+label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: #12141c; color: var(--text); font-size: 1rem;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.filters button {
+  background: #252836; border: 1px solid var(--border); color: var(--text);
+  padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem;
+}
+.filters button.active { background: var(--accent); border-color: var(--accent); }
+.search-box { margin-bottom: 16px; }
+.item-list { display: flex; flex-direction: column; gap: 10px; }
+.item {
+  display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
+  padding: 12px; background: #12141c; border-radius: 10px; border: 1px solid var(--border);
+}
+.item-info { min-width: 0; }
+.item-name { font-weight: 600; }
+.item-meta { font-size: 0.8rem; color: var(--muted); }
+.qty-control { display: flex; align-items: center; gap: 6px; }
+.qty-control button {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+  background: #252836; color: var(--text); cursor: pointer; font-size: 1.1rem;
+}
+.qty-control input { width: 60px; text-align: center; padding: 6px; }
+.unit { color: var(--muted); font-size: 0.85rem; min-width: 50px; text-align: right; }
+.summary { background: #1e2230; border-radius: 10px; padding: 16px; margin-top: 16px; }
+.summary h3 { margin: 0 0 10px; }
+.summary-item { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.9rem; }
+.btn {
+  background: var(--accent); color: #fff; border: none; padding: 12px 24px;
+  border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%;
+}
+.btn:hover { opacity: 0.9; }
+.btn.secondary { background: #252836; border: 1px solid var(--border); }
+.btn.success { background: var(--accent2); color: #000; }
+.btn.warning { background: var(--warning); color: #000; }
+.btn.danger { background: var(--danger); }
+.month-group { margin-bottom: 24px; }
+.month-title {
+  font-size: 1.1rem; font-weight: 700; margin: 0 0 12px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.month-title .count { font-size: 0.85rem; color: var(--muted); font-weight: normal; }
+.order-card {
+  background: #12141c; border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin-bottom: 12px; position: relative;
+}
+.order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+.badge { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.badge.pending { background: #ffb30033; color: #ffb300; }
+.badge.ordered { background: #4f8cff33; color: #4f8cff; }
+.badge.arrived { background: #00c85333; color: #00c853; }
+.badge.cancelled { background: #ff525233; color: #ff5252; }
+.empty { text-align: center; color: var(--muted); padding: 40px; }
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--accent2); color: #000; padding: 12px 24px; border-radius: 10px;
+  font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100;
+}
+.toast.show { opacity: 1; }
+.status-select { width: auto; padding: 4px 8px; font-size: 0.85rem; }
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.checkbox-label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; }
+.bulk-bar {
+  background: #252836; border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px; margin-bottom: 16px; display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.bulk-bar.show { display: flex; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card {
+  background: #12141c; border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;
+}
+.stat-card .num { font-size: 1.8rem; font-weight: 700; }
+.stat-card .label { font-size: 0.85rem; color: var(--muted); }
+.login-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 200;
+}
+.login-modal.show { display: flex; }
+.login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 90%; max-width: 360px; }
+.add-item-form { display: none; background: #1e2230; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.add-item-form.show { display: block; }
+@media (max-width: 600px) {
+  .item { grid-template-columns: 1fr; }
+  .qty-control { justify-content: flex-end; }
+  .order-header { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>文具<span>下單</span>系統</h1>
+  <div class="tabs">
+    <button class="active" data-tab="order">下單</button>
+    <button data-tab="records">下單紀錄</button>
+    <button data-tab="status">狀態查詢</button>
+  </div>
+  <div class="login-info" id="loginInfo">
+    <span id="loginStatus">未登入</span>
+    <button class="btn secondary" id="loginBtn" style="width:auto; padding:6px 12px; font-size:0.85rem">登入</button>
+  </div>
+</header>
+
+<main>
+  <!-- Order Tab -->
+  <div id="tab-order">
+    <div class="section">
+      <h2 style="margin-top:0">下單資料</h2>
+      <div class="form-row">
+        <div>
+          <label>下單人姓名</label>
+          <input type="text" id="requester" placeholder="請輸入姓名">
+        </div>
+        <div>
+          <label>所屬部門 / 公司</label>
+          <select id="department">
+            <option value="">請選擇</option>
+            <option>Office</option>
+            <option>Apple</option>
+            <option>Go Pro</option>
+            <option>Sennheiser</option>
+            <option>Sonova</option>
+            <option>Balluff</option>
+            <option>Lululemon</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div>
+          <label>下單日期</label>
+          <input type="date" id="orderDate">
+        </div>
+        <div>
+          <label>聯絡電話 / Email（選填）</label>
+          <input type="text" id="contact" placeholder="可選">
+        </div>
+      </div>
+      <div>
+        <label>備註</label>
+        <textarea id="notes" rows="2" placeholder="特殊要求或備註..."></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="search-box" style="flex:1; margin:0;">
+          <input type="text" id="search" placeholder="搜尋文具名稱...">
+        </div>
+        <button class="btn secondary" id="toggleAddItem" style="width:auto; margin-left:10px; padding:10px 16px;">＋ 新增文具</button>
+      </div>
+      <div class="add-item-form" id="addItemForm">
+        <h3 style="margin-top:0">新增文具項目（需上傳圖片）</h3>
+        <div class="form-row">
+          <div>
+            <label>分類</label>
+            <input type="text" id="newCat" placeholder="例如：筆、文具">
+          </div>
+          <div>
+            <label>名稱</label>
+            <input type="text" id="newName" placeholder="文具名稱">
+          </div>
+          <div>
+            <label>單位</label>
+            <input type="text" id="newUnit" placeholder="例如：Box、Piece">
+          </div>
+        </div>
+        <div style="margin:12px 0">
+          <label>商品圖片（必填）</label>
+          <input type="file" id="newImage" accept="image/*">
+          <div id="imagePreview" style="margin-top:8px"></div>
+        </div>
+        <button class="btn" id="saveNewItem" style="margin-top:8px;">儲存新項目</button>
+      </div>
+      <div class="filters" id="categoryFilters"></div>
+      <div class="item-list" id="itemList"></div>
+      
+      <div class="summary" id="summary" style="display:none">
+        <h3>已選項目 (<span id="selectedCount">0</span>)</h3>
+        <div id="summaryItems"></div>
+      </div>
+
+      <button class="btn" id="submitBtn" style="margin-top:16px">提交下單</button>
+    </div>
+  </div>
+
+  <!-- Records Tab -->
+  <div id="tab-records" style="display:none">
+    <div class="section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <h2 style="margin:0">所有下單紀錄</h2>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn secondary" id="exportBtn" style="width:auto; padding:10px 16px">匯出明細 CSV</button>
+          <button class="btn secondary" id="exportMonthBtn" style="width:auto; padding:10px 16px">匯出月份總計</button>
+          <button class="btn secondary" id="exportBackupBtn" style="width:auto; padding:10px 16px">匯出完整備份</button>
+          <button class="btn secondary" id="setBackupPathBtn" style="width:auto; padding:10px 16px; display:none">設定備份資料夾</button>
+          <button class="btn danger" id="clearBtn" style="width:auto; padding:10px 16px; display:none">清空所有紀錄</button>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <select id="monthFilter" style="width:auto">
+          <option value="all">全部月份</option>
+        </select>
+        <select id="deptFilter" style="width:auto">
+          <option value="all">全部部門</option>
+          <option>Office</option>
+          <option>Apple</option>
+          <option>Go Pro</option>
+          <option>Sennheiser</option>
+          <option>Sonova</option>
+          <option>Balluff</option>
+          <option>Lululemon</option>
+          <option>其他</option>
+        </select>
+        <select id="statusFilter" style="width:auto">
+          <option value="all">全部狀態</option>
+          <option value="待下單">待下單</option>
+          <option value="已下單">已下單</option>
+          <option value="已到貨">已到貨</option>
+          <option value="已取消">已取消</option>
+        </select>
+      </div>
+
+      <div class="bulk-bar" id="bulkBar">
+        <span id="selectedCountText">已選 0 筆</span>
+        <select id="bulkStatus" style="width:auto">
+          <option value="">選擇新狀態...</option>
+          <option>待下單</option>
+          <option>已下單</option>
+          <option>已到貨</option>
+          <option>已取消</option>
+        </select>
+        <button class="btn secondary" id="bulkUpdateBtn" style="width:auto; padding:8px 16px">更新選取</button>
+      </div>
+
+      <div id="recordsList"></div>
+    </div>
+  </div>
+
+  <!-- Status Query Tab -->
+  <div id="tab-status" style="display:none">
+    <div class="section">
+      <h2 style="margin-top:0">狀態查詢</h2>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="filter-bar">
+        <select id="statusQueryFilter" style="width:auto">
+          <option value="all">全部狀態</option>
+          <option value="待下單">待下單</option>
+          <option value="已下單">已下單</option>
+          <option value="已到貨">已到貨</option>
+          <option value="已取消">已取消</option>
+        </select>
+        <select id="statusMonthFilter" style="width:auto">
+          <option value="all">全部月份</option>
+        </select>
+      </div>
+      <div id="statusList"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Login Modal -->
+<div class="login-modal" id="loginModal">
+  <div class="login-box">
+    <h3 style="margin-top:0">管理員登入</h3>
+    <p style="color:var(--muted);font-size:0.9rem">登入後可更改狀態、刪除紀錄</p>
+    <div style="margin:16px 0">
+      <label>帳號</label>
+      <input type="text" id="loginUser" placeholder="admin" value="admin">
+    </div>
+    <div style="margin-bottom:16px">
+      <label>密碼</label>
+      <input type="password" id="loginPass" placeholder="請輸入密碼">
+    </div>
+    <div style="display:flex; gap:8px">
+      <button class="btn" id="doLoginBtn">登入</button>
+      <button class="btn secondary" id="cancelLoginBtn">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_ITEMS = [
+  {"id":1,"category":"筆","name":"天鵝牌藍原子筆(10)","unit":"Box"},
+  {"id":2,"category":"筆","name":"天鵝牌黑原子筆(10)","unit":"Box"},
+  {"id":3,"category":"筆","name":"天鵝牌紅原子筆(10)","unit":"Box"},
+  {"id":4,"category":"筆","name":"天鵝牌按掣原子筆(藍)","unit":"Box"},
+  {"id":5,"category":"筆","name":"螢光筆(黃橙粉紅藍綠)","unit":"Piece"},
+  {"id":6,"category":"筆","name":"藍色MARKER(12)","unit":"Box"},
+  {"id":7,"category":"筆","name":"黑色MARKER(12)","unit":"Box"},
+  {"id":8,"category":"筆","name":"紅色MARKER(12)","unit":"Box"},
+  {"id":9,"category":"文具","name":"告事貼 1.5\" x 2\"","unit":"Pad"},
+  {"id":10,"category":"文具","name":"告事貼 3\" x 3\"","unit":"Pad"},
+  {"id":11,"category":"文具","name":"改錯帶","unit":"Piece"},
+  {"id":12,"category":"文具","name":"漿糊筆","unit":"Piece"},
+  {"id":13,"category":"文具","name":"擦膠","unit":"Piece"},
+  {"id":14,"category":"文具","name":"筆筒","unit":"Piece"},
+  {"id":15,"category":"文具","name":"#832181 釘書釘(5000 PCS)","unit":"Box"},
+  {"id":16,"category":"文具","name":"釘書機 HD-88R","unit":"Piece"},
+  {"id":17,"category":"文具","name":"起釘鉗","unit":"Piece"},
+  {"id":18,"category":"文具","name":"打孔機","unit":"Piece"},
+  {"id":19,"category":"文具","name":"鉛筆刨","unit":"Piece"},
+  {"id":20,"category":"文具","name":"大萬字夾","unit":"Box"},
+  {"id":21,"category":"文具","name":"細萬字夾","unit":"Box"},
+  {"id":22,"category":"文具","name":"Hius HR148 萬字夾盅","unit":"Piece"},
+  {"id":23,"category":"文具","name":"間尺","unit":"Piece"},
+  {"id":24,"category":"文具","name":"2吋橡筋","unit":"Bag"},
+  {"id":25,"category":"文具","name":"單夾板(黑)","unit":"Piece"},
+  {"id":26,"category":"文具","name":"1吋文件夾(黑)","unit":"Dozen"},
+  {"id":27,"category":"文具","name":"2吋文件夾(黑)","unit":"Dozen"},
+  {"id":28,"category":"文具","name":"膠紙","unit":"筒"},
+  {"id":29,"category":"文具","name":"膠紙座","unit":"Piece"},
+  {"id":30,"category":"文具","name":"油性雙面膠紙","unit":"Piece"},
+  {"id":31,"category":"文具","name":"計算機","unit":"Piece"},
+  {"id":32,"category":"文具","name":"兩層文件架","unit":"Piece"},
+  {"id":33,"category":"文具","name":"文件架駁腳(短鐵柱)","unit":"Pack"},
+  {"id":34,"category":"剪裁用品","name":"鐵鎅刀(細)","unit":"Piece"},
+  {"id":35,"category":"剪裁用品","name":"剪刀","unit":"Piece"},
+  {"id":36,"category":"剪裁用品","name":"大刀片(10片)","unit":"Piece"},
+  {"id":37,"category":"剪裁用品","name":"細刀片(10片)","unit":"Tube"},
+  {"id":38,"category":"剪裁用品","name":"大鎅刀","unit":"Piece"},
+  {"id":39,"category":"剪裁用品","name":"細鎅刀","unit":"Piece"},
+  {"id":40,"category":"剪裁用品","name":"A1 size 切割板","unit":"Piece"},
+  {"id":41,"category":"剪裁用品","name":"鐵膠紙機2吋","unit":"Piece"},
+  {"id":42,"category":"剪裁用品","name":"鐵膠紙機2.5吋","unit":"Piece"},
+  {"id":43,"category":"FILE","name":"FILE","unit":"Piece"},
+  {"id":44,"category":"FILE","name":"A4 膠FILE-透明","unit":"Piece"},
+  {"id":45,"category":"FILE","name":"A4 膠FILE-其他顏色(黃紅藍綠)","unit":"Piece"},
+  {"id":46,"category":"FILE","name":"硬皮文件夾3吋A4size","unit":"Piece"},
+  {"id":47,"category":"文具","name":"網紋拉鍊袋 - A4","unit":"Piece"},
+  {"id":48,"category":"簿","name":"紅黑面硬皮 (100頁) (6″ x 8″)","unit":"Piece"},
+  {"id":49,"category":"簿","name":"紅黑面硬皮簿 100頁 (8.5\" X 13\")","unit":"Piece"},
+  {"id":50,"category":"簿","name":"紅黑面硬皮簿 200頁 (8.5\" X 13\")","unit":"Piece"},
+  {"id":51,"category":"簿","name":"Gambol S5807 線圈記事簿 6″x8″-80p","unit":"Piece"},
+  {"id":52,"category":"白板類","name":"白版 60 x 90cm","unit":"Piece"},
+  {"id":53,"category":"白板類","name":"磁石貼 30mm (5粒)","unit":"Piece"},
+  {"id":54,"category":"白板類","name":"磁石片 210x297mm","unit":"Piece"},
+  {"id":55,"category":"白板類","name":"磁石掛勾","unit":"Piece"},
+  {"id":56,"category":"紙","name":"SUPREME 80gsm","unit":"Box"},
+  {"id":57,"category":"電池","name":"AA 電池 充電器","unit":"Piece"},
+  {"id":58,"category":"電池","name":"4粒裝2A叉電","unit":"Pack"},
+  {"id":59,"category":"電池","name":"4粒裝3A叉電","unit":"Pack"},
+  {"id":60,"category":"電/電池","name":"6位合格排插 + 4個USB充電器(黑色)","unit":"Piece"},
+  {"id":61,"category":"電/電池","name":"13A 萬能插蘇","unit":"Piece"},
+  {"id":62,"category":"Label","name":"顏色編碼標籤 1/2\" 圓形 12 mm 紅色","unit":"Pack"},
+  {"id":63,"category":"Label","name":"顏色編碼標籤 1/2\" 圓形 12 mm 藍色","unit":"Pack"},
+  {"id":64,"category":"Label","name":"Handel with care label","unit":"Pack"},
+  {"id":65,"category":"其他","name":"膠點手套","unit":"Dozen"},
+  {"id":66,"category":"其他","name":"勞工手套","unit":"Dozen"},
+  {"id":67,"category":"其他","name":"拉尺-5M","unit":"Piece"},
+  {"id":68,"category":"其他","name":"Blu Tack","unit":"Piece"},
+  {"id":69,"category":"其他","name":"A4 過膠片","unit":"Box"},
+  {"id":70,"category":"其他","name":"碎紙機專用機油(120ml)","unit":"Piece"},
+  {"id":71,"category":"其他","name":"索帶8\"*2.5MM 100條","unit":"Bag"},
+  {"id":72,"category":"墨水/印章","name":"藍色墨水","unit":"Bot"},
+  {"id":73,"category":"墨水/印章","name":"紅色墨水","unit":"Bot"},
+  {"id":74,"category":"墨水/印章","name":"日子印","unit":"Piece"},
+  {"id":75,"category":"清潔用品","name":"洗碗百潔布","unit":"Piece"},
+  {"id":76,"category":"清潔用品","name":"滴露消毒濕紙巾 20x17cm 80's","unit":"Can"},
+  {"id":77,"category":"藥品","name":"膠布","unit":"Box"},
+  {"id":78,"category":"藥品","name":"消毒火酒","unit":"Piece"}
+];
+
+const DEPTS = ['Office', 'Apple', 'Go Pro', 'Sennheiser', 'Sonova', 'Balluff', 'Lululemon', '其他'];
+const STATUSES = ['待下單', '已下單', '已到貨', '已取消'];
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = '1234';
+
+let allItems = [];
+let quantities = {};
+let currentCategory = '全部';
+let searchTerm = '';
+let monthFilter = 'all';
+let deptFilter = 'all';
+let statusFilter = 'all';
+let statusQueryFilter = 'all';
+let statusMonthFilter = 'all';
+let isLoggedIn = false;
+let selectedIds = new Set();
+
+function loadCustomItems() {
+  try { return JSON.parse(localStorage.getItem('stationeryCustomItems') || '[]'); }
+  catch { return []; }
+}
+function saveCustomItems(items) {
+  localStorage.setItem('stationeryCustomItems', JSON.stringify(items));
+}
+function getAllItems() {
+  const custom = loadCustomItems();
+  return [...DEFAULT_ITEMS, ...custom];
+}
+
+function loadOrders() {
+  try { return JSON.parse(localStorage.getItem('stationeryOrders') || '[]'); }
+  catch { return []; }
+}
+function saveOrders(orders) {
+  localStorage.setItem('stationeryOrders', JSON.stringify(orders));
+}
+
+function getMonthKey(dateStr) {
+  if (!dateStr) return '未知月份';
+  return dateStr.slice(0, 7);
+}
+
+let backupDirHandle = null;
+
+async function autoBackup() {
+  const now = new Date();
+  const stamp = now.toISOString().slice(0,19).replace(/[-:T]/g, '').slice(0,12); // YYYYMMDDHHMM
+  const filename = `文具下單備份_${stamp}.json`;
+  const backup = {
+    version: 1,
+    exportedAt: now.toISOString(),
+    orders: loadOrders(),
+    customItems: loadCustomItems()
+  };
+  const content = JSON.stringify(backup, null, 2);
+
+  // Try writing to selected directory if available
+  if (backupDirHandle) {
+    try {
+      const fileHandle = await backupDirHandle.getFileHandle(filename, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      toast('已自動備份到指定資料夾');
+      return;
+    } catch (e) {
+      console.warn('Write to directory failed', e);
+    }
+  }
+
+  // Fallback: regular download
+  const blob = new Blob([content], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已自動備份（下載）');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function updateLoginUI() {
+  const statusEl = document.getElementById('loginStatus');
+  const loginBtn = document.getElementById('loginBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const setPathBtn = document.getElementById('setBackupPathBtn');
+  if (isLoggedIn) {
+    statusEl.textContent = '已登入 (admin)';
+    loginBtn.textContent = '登出';
+    loginBtn.onclick = logout;
+    clearBtn.style.display = 'inline-block';
+    setPathBtn.style.display = 'inline-block';
+  } else {
+    statusEl.textContent = '未登入';
+    loginBtn.textContent = '登入';
+    loginBtn.onclick = () => document.getElementById('loginModal').classList.add('show');
+    clearBtn.style.display = 'none';
+    setPathBtn.style.display = 'none';
+  }
+}
+
+function logout() {
+  isLoggedIn = false;
+  sessionStorage.removeItem('stationeryAdmin');
+  updateLoginUI();
+  toast('已登出');
+  if (document.getElementById('tab-records').style.display !== 'none') renderRecords();
+}
+
+function checkLogin() {
+  if (sessionStorage.getItem('stationeryAdmin') === 'true') {
+    isLoggedIn = true;
+  }
+  updateLoginUI();
+}
+
+function renderCategories() {
+  allItems = getAllItems();
+  const cats = [...new Set(allItems.map(i => i.category))];
+  const el = document.getElementById('categoryFilters');
+  el.innerHTML = `<button class="${currentCategory==='全部'?'active':''}" data-cat="全部">全部</button>` +
+    cats.map(c => `<button class="${currentCategory===c?'active':''}" data-cat="${c}">${c}</button>`).join('');
+  el.querySelectorAll('button').forEach(btn => {
+    btn.onclick = () => { currentCategory = btn.dataset.cat; renderCategories(); renderItems(); };
+  });
+}
+
+function renderItems() {
+  allItems = getAllItems();
+  const filtered = allItems.filter(item => {
+    const catOk = currentCategory === '全部' || item.category === currentCategory;
+    const searchOk = !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return catOk && searchOk;
+  });
+
+  document.getElementById('itemList').innerHTML = filtered.map(item => `
+    <div class="item" data-id="${item.id}">
+      <div class="item-info">
+        ${item.image ? `<img src="${item.image}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;margin-right:8px;vertical-align:middle">` : ''}
+        <div style="display:inline-block;vertical-align:middle">
+          <div class="item-name">${item.name}</div>
+          <div class="item-meta">${item.category} · ${item.unit}</div>
+        </div>
+      </div>
+      <div class="qty-control">
+        <button data-action="minus" data-id="${item.id}">−</button>
+        <input type="number" min="0" value="${quantities[item.id]||0}" data-id="${item.id}" class="qty-input">
+        <button data-action="plus" data-id="${item.id}">+</button>
+      </div>
+      <div class="unit">${item.unit}</div>
+    </div>
+  `).join('') || '<div class="empty">沒有符合的項目</div>';
+
+  document.querySelectorAll('.qty-input').forEach(input => {
+    input.onchange = input.oninput = e => {
+      const id = +e.target.dataset.id;
+      quantities[id] = Math.max(0, parseInt(e.target.value) || 0);
+      updateSummary();
+    };
+  });
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.onclick = () => {
+      const id = +btn.dataset.id;
+      const delta = btn.dataset.action === 'plus' ? 1 : -1;
+      quantities[id] = Math.max(0, (quantities[id] || 0) + delta);
+      const input = document.querySelector(`.qty-input[data-id="${id}"]`);
+      if (input) input.value = quantities[id];
+      updateSummary();
+    };
+  });
+}
+
+function updateSummary() {
+  allItems = getAllItems();
+  const selected = allItems.filter(i => quantities[i.id] > 0);
+  const summary = document.getElementById('summary');
+  const countEl = document.getElementById('selectedCount');
+  const itemsEl = document.getElementById('summaryItems');
+
+  if (selected.length === 0) {
+    summary.style.display = 'none';
+    return;
+  }
+  summary.style.display = 'block';
+  countEl.textContent = selected.length;
+  itemsEl.innerHTML = selected.map(i => `
+    <div class="summary-item">
+      <span>${i.name}</span>
+      <span>${quantities[i.id]} ${i.unit}</span>
+    </div>
+  `).join('');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('tab-order').style.display = tab === 'order' ? 'block' : 'none';
+  document.getElementById('tab-records').style.display = tab === 'records' ? 'block' : 'none';
+  document.getElementById('tab-status').style.display = tab === 'status' ? 'block' : 'none';
+  if (tab === 'records') renderRecords();
+  if (tab === 'status') renderStatusQuery();
+}
+
+function getStatusClass(status) {
+  if (status === '待下單') return 'pending';
+  if (status === '已下單') return 'ordered';
+  if (status === '已到貨') return 'arrived';
+  if (status === '已取消') return 'cancelled';
+  return '';
+}
+
+function updateMonthFilterOptions() {
+  const orders = loadOrders();
+  const months = [...new Set(orders.map(o => getMonthKey(o.orderDate || new Date(o.timestamp).toISOString().slice(0,10))))].sort().reverse();
+  const sel = document.getElementById('monthFilter');
+  const current = sel.value;
+  sel.innerHTML = '<option value="all">全部月份</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
+  sel.value = months.includes(current) ? current : 'all';
+
+  const sel2 = document.getElementById('statusMonthFilter');
+  sel2.innerHTML = '<option value="all">全部月份</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  const text = document.getElementById('selectedCountText');
+  text.textContent = `已選 ${selectedIds.size} 筆`;
+  bar.classList.toggle('show', selectedIds.size > 0 && isLoggedIn);
+}
+
+function renderRecords() {
+  updateMonthFilterOptions();
+  let orders = loadOrders();
+
+  if (monthFilter !== 'all') {
+    orders = orders.filter(o => getMonthKey(o.orderDate || new Date(o.timestamp).toISOString().slice(0,10)) === monthFilter);
+  }
+  if (deptFilter !== 'all') {
+    orders = orders.filter(o => (o.department || '') === deptFilter);
+  }
+  if (statusFilter !== 'all') {
+    orders = orders.filter(o => (o.status || '待下單') === statusFilter);
+  }
+
+  orders.sort((a, b) => {
+    const da = a.orderDate || new Date(a.timestamp).toISOString().slice(0,10);
+    const db = b.orderDate || new Date(b.timestamp).toISOString().slice(0,10);
+    return db.localeCompare(da);
+  });
+
+  const el = document.getElementById('recordsList');
+  if (orders.length === 0) {
+    el.innerHTML = '<div class="empty">暫無下單紀錄</div>';
+    updateBulkBar();
+    return;
+  }
+
+  const groups = {};
+  orders.forEach(o => {
+    const key = getMonthKey(o.orderDate || new Date(o.timestamp).toISOString().slice(0,10));
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(o);
+  });
+
+  const sortedMonths = Object.keys(groups).sort().reverse();
+
+  el.innerHTML = sortedMonths.map(month => {
+    const list = groups[month];
+    return `
+      <div class="month-group">
+        <div class="month-title">
+          <span>${month} <span class="count">(${list.length} 筆)</span></span>
+          ${isLoggedIn ? `<button class="btn secondary" style="width:auto; padding:6px 12px; font-size:0.85rem" data-select-month="${month}">全選此月</button>` : ''}
+        </div>
+        ${list.map(o => {
+          const status = o.status || '待下單';
+          const date = o.orderDate || new Date(o.timestamp).toISOString().slice(0,10);
+          const checked = selectedIds.has(o.id) ? 'checked' : '';
+          return `
+            <div class="order-card" data-id="${o.id}">
+              <div class="order-header">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                  ${isLoggedIn ? `<label class="checkbox-label"><input type="checkbox" class="order-check" data-id="${o.id}" ${checked}> 選取</label>` : ''}
+                  <strong>${o.requester || '未填姓名'}</strong>
+                  <span class="badge">${o.department || '未選部門'}</span>
+                  <span class="badge ${getStatusClass(status)}">${status}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span style="color:var(--muted);font-size:0.85rem">${date}</span>
+                  ${isLoggedIn ? `
+                    <select class="status-select" data-id="${o.id}">
+                      ${STATUSES.map(s => `<option value="${s}" ${s===status?'selected':''}>${s}</option>`).join('')}
+                    </select>
+                  ` : `<span style="font-size:0.85rem;color:var(--muted)">（登入後可改狀態）</span>`}
+                </div>
+              </div>
+              ${o.contact ? `<div style="font-size:0.85rem;color:var(--muted)">聯絡：${o.contact}</div>` : ''}
+              ${o.notes ? `<div style="font-size:0.85rem;margin:6px 0">備註：${o.notes}</div>` : ''}
+              <div style="margin-top:8px">
+                ${o.items.map(it => `<div style="font-size:0.9rem">${it.name} × ${it.qty} ${it.unit}</div>`).join('')}
+              </div>
+              ${isLoggedIn ? `<button class="btn secondary" style="margin-top:10px;width:auto;padding:6px 12px;font-size:0.85rem" data-del="${o.id}">刪除這筆</button>` : '<div style="margin-top:8px;font-size:0.8rem;color:var(--muted)">登入後可刪除</div>'}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }).join('');
+
+  if (isLoggedIn) {
+    document.querySelectorAll('.order-check').forEach(cb => {
+      cb.onchange = () => {
+        const id = +cb.dataset.id;
+        if (cb.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+        updateBulkBar();
+      };
+    });
+
+    document.querySelectorAll('[data-select-month]').forEach(btn => {
+      btn.onclick = () => {
+        const month = btn.dataset.selectMonth;
+        const monthOrders = groups[month] || [];
+        monthOrders.forEach(o => selectedIds.add(o.id));
+        renderRecords();
+        updateBulkBar();
+      };
+    });
+
+    document.querySelectorAll('.status-select').forEach(sel => {
+      sel.onchange = () => {
+        if (!isLoggedIn) return toast('請先登入');
+        const id = +sel.dataset.id;
+        const orders = loadOrders();
+        const order = orders.find(o => o.id === id);
+        if (order) {
+          order.status = sel.value;
+          saveOrders(orders);
+          toast('狀態已更新');
+          renderRecords();
+        }
+      };
+    });
+
+    document.querySelectorAll('[data-del]').forEach(btn => {
+      btn.onclick = () => {
+        if (!isLoggedIn) return toast('請先登入');
+        if (!confirm('確定刪除這筆紀錄？')) return;
+        const id = +btn.dataset.del;
+        const orders = loadOrders().filter(o => o.id !== id);
+        saveOrders(orders);
+        selectedIds.delete(id);
+        renderRecords();
+        toast('已刪除');
+      };
+    });
+  }
+
+  updateBulkBar();
+}
+
+function renderStatusQuery() {
+  updateMonthFilterOptions();
+  let orders = loadOrders();
+
+  if (statusMonthFilter !== 'all') {
+    orders = orders.filter(o => getMonthKey(o.orderDate || new Date(o.timestamp).toISOString().slice(0,10)) === statusMonthFilter);
+  }
+  if (statusQueryFilter !== 'all') {
+    orders = orders.filter(o => (o.status || '待下單') === statusQueryFilter);
+  }
+
+  const all = loadOrders();
+  const stats = {
+    '待下單': all.filter(o => (o.status || '待下單') === '待下單').length,
+    '已下單': all.filter(o => o.status === '已下單').length,
+    '已到貨': all.filter(o => o.status === '已到貨').length,
+    '已取消': all.filter(o => o.status === '已取消').length
+  };
+
+  document.getElementById('statGrid').innerHTML = Object.entries(stats).map(([s, n]) => `
+    <div class="stat-card">
+      <div class="num">${n}</div>
+      <div class="label">${s}</div>
+    </div>
+  `).join('');
+
+  const el = document.getElementById('statusList');
+  if (orders.length === 0) {
+    el.innerHTML = '<div class="empty">沒有符合條件的紀錄</div>';
+    return;
+  }
+
+  orders.sort((a, b) => {
+    const da = a.orderDate || new Date(a.timestamp).toISOString().slice(0,10);
+    const db = b.orderDate || new Date(b.timestamp).toISOString().slice(0,10);
+    return db.localeCompare(da);
+  });
+
+  el.innerHTML = orders.map(o => {
+    const status = o.status || '待下單';
+    const date = o.orderDate || new Date(o.timestamp).toISOString().slice(0,10);
+    return `
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <strong>${o.requester || '未填姓名'}</strong>
+            <span class="badge">${o.department || '未選部門'}</span>
+            <span class="badge ${getStatusClass(status)}">${status}</span>
+          </div>
+          <span style="color:var(--muted);font-size:0.85rem">${date}</span>
+        </div>
+        <div style="font-size:0.9rem;margin-top:6px">
+          ${o.items.map(it => `${it.name} × ${it.qty} ${it.unit}`).join('　')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Filters
+document.getElementById('monthFilter').onchange = e => { monthFilter = e.target.value; selectedIds.clear(); renderRecords(); };
+document.getElementById('deptFilter').onchange = e => { deptFilter = e.target.value; selectedIds.clear(); renderRecords(); };
+document.getElementById('statusFilter').onchange = e => { statusFilter = e.target.value; selectedIds.clear(); renderRecords(); };
+document.getElementById('statusQueryFilter').onchange = e => { statusQueryFilter = e.target.value; renderStatusQuery(); };
+document.getElementById('statusMonthFilter').onchange = e => { statusMonthFilter = e.target.value; renderStatusQuery(); };
+
+// Bulk update (login required)
+document.getElementById('bulkUpdateBtn').onclick = () => {
+  if (!isLoggedIn) return toast('請先登入');
+  const newStatus = document.getElementById('bulkStatus').value;
+  if (!newStatus) return toast('請選擇新狀態');
+  if (selectedIds.size === 0) return toast('請先選取紀錄');
+  const orders = loadOrders();
+  let count = 0;
+  orders.forEach(o => {
+    if (selectedIds.has(o.id)) {
+      o.status = newStatus;
+      count++;
+    }
+  });
+  saveOrders(orders);
+  selectedIds.clear();
+  document.getElementById('bulkStatus').value = '';
+  toast(`已更新 ${count} 筆狀態為「${newStatus}」`);
+  renderRecords();
+};
+
+// Export detail CSV
+document.getElementById('exportBtn').onclick = () => {
+  const orders = loadOrders();
+  if (orders.length === 0) return toast('沒有紀錄可匯出');
+  let csv = '月份,下單日期,下單人,部門,狀態,聯絡,備註,項目,數量,單位\n';
+  orders.forEach(o => {
+    const date = o.orderDate || new Date(o.timestamp).toISOString().slice(0,10);
+    const month = getMonthKey(date);
+    const status = o.status || '待下單';
+    o.items.forEach(it => {
+      csv += `"${month}","${date}","${o.requester||''}","${o.department||''}","${status}","${o.contact||''}","${(o.notes||'').replace(/"/g,'""')}","${it.name}","${it.qty}","${it.unit}"\n`;
+    });
+  });
+  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `文具下單明細_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('已匯出明細 CSV');
+};
+
+// Set backup directory (File System Access API)
+document.getElementById('setBackupPathBtn').onclick = async () => {
+  if (!isLoggedIn) return toast('請先登入');
+  if (!window.showDirectoryPicker) {
+    return toast('此瀏覽器不支援選擇資料夾（請使用 Chrome / Edge）');
+  }
+  try {
+    backupDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    toast('備份資料夾已設定');
+  } catch (e) {
+    if (e.name !== 'AbortError') toast('設定失敗');
+  }
+};
+document.getElementById('exportBackupBtn').onclick = () => {
+  const backup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    orders: loadOrders(),
+    customItems: loadCustomItems()
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `文具下單完整備份_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('已匯出完整備份（含訂單及自訂文具）');
+};
+document.getElementById('exportMonthBtn').onclick = () => {
+  const month = monthFilter === 'all' ? prompt('請輸入要匯出的月份（格式：2026-10）') : monthFilter;
+  if (!month) return;
+  const orders = loadOrders().filter(o => getMonthKey(o.orderDate || new Date(o.timestamp).toISOString().slice(0,10)) === month);
+  if (orders.length === 0) return toast('該月份沒有下單紀錄');
+
+  allItems = getAllItems();
+  const summary = {};
+  allItems.forEach(item => {
+    summary[item.id] = { ...item, depts: Object.fromEntries(DEPTS.map(d => [d, 0])), total: 0 };
+  });
+
+  orders.forEach(o => {
+    const dept = o.department || '其他';
+    o.items.forEach(it => {
+      const item = allItems.find(i => i.name === it.name);
+      if (item && summary[item.id]) {
+        summary[item.id].depts[dept] = (summary[item.id].depts[dept] || 0) + it.qty;
+        summary[item.id].total += it.qty;
+      }
+    });
+  });
+
+  let csv = '分類,中文名稱,' + DEPTS.join(',') + ',Sum,單位\n';
+  Object.values(summary).forEach(s => {
+    if (s.total > 0) {
+      const deptVals = DEPTS.map(d => s.depts[d] || 0).join(',');
+      csv += `"${s.category}","${s.name}",${deptVals},${s.total},"${s.unit}"\n`;
+    }
+  });
+
+  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `文具下單總計_${month}.csv`;
+  a.click();
+  toast(`已匯出 ${month} 月份總計`);
+};
+
+document.getElementById('clearBtn').onclick = () => {
+  if (!isLoggedIn) return toast('請先登入');
+  if (confirm('確定清空所有下單紀錄？此操作無法復原。')) {
+    localStorage.removeItem('stationeryOrders');
+    selectedIds.clear();
+    renderRecords();
+    toast('已清空');
+  }
+};
+
+document.getElementById('submitBtn').onclick = () => {
+  const requester = document.getElementById('requester').value.trim();
+  const department = document.getElementById('department').value;
+  const orderDate = document.getElementById('orderDate').value;
+  const contact = document.getElementById('contact').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+
+  allItems = getAllItems();
+  const items = allItems.filter(i => quantities[i.id] > 0).map(i => ({
+    name: i.name, qty: quantities[i.id], unit: i.unit, category: i.category
+  }));
+
+  if (!requester) return toast('請填寫下單人姓名');
+  if (!department) return toast('請選擇部門');
+  if (!orderDate) return toast('請選擇下單日期');
+  if (items.length === 0) return toast('請至少選擇一項文具');
+
+  const order = {
+    id: Date.now(),
+    timestamp: Date.now(),
+    orderDate,
+    status: '待下單',
+    requester, department, contact, notes, items
+  };
+
+  const orders = loadOrders();
+  orders.push(order);
+  saveOrders(orders);
+  autoBackup(); // 每次下單後自動備份
+
+  quantities = {};
+  document.getElementById('requester').value = '';
+  document.getElementById('contact').value = '';
+  document.getElementById('notes').value = '';
+  document.getElementById('department').value = '';
+  document.getElementById('orderDate').value = new Date().toISOString().slice(0,10);
+  renderItems();
+  updateSummary();
+  toast('下單成功！狀態：待下單');
+};
+
+document.getElementById('search').oninput = e => {
+  searchTerm = e.target.value;
+  renderItems();
+};
+
+document.querySelectorAll('.tabs button').forEach(btn => {
+  btn.onclick = () => switchTab(btn.dataset.tab);
+});
+
+// Add item (no login required, but image required)
+document.getElementById('toggleAddItem').onclick = () => {
+  document.getElementById('addItemForm').classList.toggle('show');
+};
+
+document.getElementById('newImage').onchange = e => {
+  const file = e.target.files[0];
+  const preview = document.getElementById('imagePreview');
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      preview.innerHTML = `<img src="${ev.target.result}" style="max-width:120px;max-height:120px;border-radius:8px">`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.innerHTML = '';
+  }
+};
+
+document.getElementById('saveNewItem').onclick = () => {
+  const cat = document.getElementById('newCat').value.trim();
+  const name = document.getElementById('newName').value.trim();
+  const unit = document.getElementById('newUnit').value.trim();
+  const fileInput = document.getElementById('newImage');
+  const file = fileInput.files[0];
+
+  if (!cat || !name || !unit) return toast('請填寫分類、名稱、單位');
+  if (!file) return toast('請上傳商品圖片');
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const custom = loadCustomItems();
+    const newId = Date.now();
+    custom.push({ id: newId, category: cat, name, unit, image: ev.target.result });
+    saveCustomItems(custom);
+    document.getElementById('newCat').value = '';
+    document.getElementById('newName').value = '';
+    document.getElementById('newUnit').value = '';
+    fileInput.value = '';
+    document.getElementById('imagePreview').innerHTML = '';
+    document.getElementById('addItemForm').classList.remove('show');
+    renderCategories();
+    renderItems();
+    toast('已新增文具項目（含圖片）');
+  };
+  reader.readAsDataURL(file);
+};
+
+// Login
+document.getElementById('doLoginBtn').onclick = () => {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    isLoggedIn = true;
+    sessionStorage.setItem('stationeryAdmin', 'true');
+    document.getElementById('loginModal').classList.remove('show');
+    document.getElementById('loginPass').value = '';
+    updateLoginUI();
+    toast('登入成功');
+    if (document.getElementById('tab-records').style.display !== 'none') renderRecords();
+  } else {
+    toast('帳號或密碼錯誤');
+  }
+};
+document.getElementById('cancelLoginBtn').onclick = () => {
+  document.getElementById('loginModal').classList.remove('show');
+};
+document.getElementById('loginBtn').onclick = () => document.getElementById('loginModal').classList.add('show');
+
+// Init
+document.getElementById('orderDate').value = new Date().toISOString().slice(0,10);
+checkLogin();
+renderCategories();
+renderItems();
+updateSummary();
+</script>
+</body>
+</html>
