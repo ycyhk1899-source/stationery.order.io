@@ -37,8 +37,51 @@ h1 span { color: var(--accent); }
 }
 .tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 .login-info { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+main { max-width: 1320px; margin: 0 auto; padding: 20px; }
 .section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+
+/* Two-column Order Layout */
+.order-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+}
+.order-main-col { min-width: 0; }
+.order-side-col {
+  position: sticky;
+  top: 82px;
+}
+.side-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.side-card h3 {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.side-summary-list {
+  max-height: 48vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 14px;
+}
+.side-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 28px 10px;
+  background: #12141c;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
 .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
 label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
 input, select, textarea {
@@ -55,22 +98,57 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .search-box { margin-bottom: 16px; }
 .item-list { display: flex; flex-direction: column; gap: 10px; }
 .item {
-  display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
+  display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center;
   padding: 12px; background: #12141c; border-radius: 10px; border: 1px solid var(--border);
 }
-.item-info { min-width: 0; }
-.item-name { font-weight: 600; }
-.item-meta { font-size: 0.8rem; color: var(--muted); }
+.item-info { min-width: 0; display: flex; align-items: center; gap: 12px; }
+.item-thumb {
+  width: 52px; height: 52px; object-fit: cover; border-radius: 8px;
+  border: 1px solid var(--border); background: #1e2230; flex-shrink: 0;
+}
+.item-thumb-placeholder {
+  width: 52px; height: 52px; border-radius: 8px; border: 1px dashed var(--border);
+  background: #181b25; color: var(--muted); font-size: 0.7rem;
+  display: flex; align-items: center; justify-content: center; text-align: center; flex-shrink: 0;
+}
+.item-text { min-width: 0; }
+.item-name { font-weight: 600; word-break: break-word; }
+.item-name a { color: var(--accent); text-decoration: none; }
+.item-name a:hover { text-decoration: underline; }
+.item-meta { font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.item-link {
+  color: var(--accent); text-decoration: none; font-size: 0.78rem;
+  background: #4f8cff1a; padding: 2px 8px; border-radius: 10px; border: 1px solid #4f8cff44;
+}
+.item-link:hover { background: #4f8cff33; }
 .qty-control { display: flex; align-items: center; gap: 6px; }
 .qty-control button {
   width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
   background: #252836; color: var(--text); cursor: pointer; font-size: 1.1rem;
 }
 .qty-control input { width: 60px; text-align: center; padding: 6px; }
-.unit { color: var(--muted); font-size: 0.85rem; min-width: 50px; text-align: right; }
-.summary { background: #1e2230; border-radius: 10px; padding: 16px; margin-top: 16px; }
-.summary h3 { margin: 0 0 10px; }
-.summary-item { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.9rem; }
+.unit { color: var(--muted); font-size: 0.85rem; min-width: 48px; text-align: right; }
+.item-actions { display: flex; align-items: center; gap: 6px; }
+.icon-btn {
+  background: #252836; border: 1px solid var(--border); color: var(--muted);
+  padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem;
+}
+.icon-btn:hover { color: var(--text); border-color: var(--accent); }
+.icon-btn.del:hover { color: #fff; background: var(--danger); border-color: var(--danger); }
+
+.summary-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 8px 10px; font-size: 0.9rem; background: #12141c;
+  border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px;
+}
+.summary-item-name { flex: 1; min-width: 0; word-break: break-word; }
+.summary-item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; color: var(--accent); font-weight: 600; }
+.summary-remove {
+  background: transparent; border: none; color: var(--muted); cursor: pointer;
+  font-size: 1rem; padding: 0 4px; line-height: 1;
+}
+.summary-remove:hover { color: var(--danger); }
+
 .btn {
   background: var(--accent); color: #fff; border: none; padding: 12px 24px;
   border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%;
@@ -123,15 +201,28 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 200;
 }
 .login-modal.show { display: flex; }
-.login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 90%; max-width: 360px; }
-.add-item-form { display: none; background: #1e2230; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 90%; max-width: 420px; }
+.add-item-form { display: none; background: #1e2230; border-radius: 10px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
 .add-item-form.show { display: block; }
 .sync-status { font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; background: #252836; color: var(--muted); }
 .sync-status.ok { color: var(--accent2); }
 .sync-status.err { color: var(--danger); }
+
+@media (max-width: 900px) {
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+  .order-side-col {
+    position: static;
+  }
+  .side-summary-list {
+    max-height: none;
+  }
+}
 @media (max-width: 600px) {
   .item { grid-template-columns: 1fr; }
   .qty-control { justify-content: flex-end; }
+  .item-actions { justify-content: flex-end; }
   .order-header { flex-direction: column; }
 }
 </style>
@@ -154,81 +245,108 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 <main>
   <!-- Order Tab -->
   <div id="tab-order">
-    <div class="section">
-      <h2 style="margin-top:0">下單資料</h2>
-      <div class="form-row">
-        <div>
-          <label>下單人姓名</label>
-          <input type="text" id="requester" placeholder="請輸入姓名">
+    <div class="order-layout">
+      <!-- Left Main Column -->
+      <div class="order-main-col">
+        <div class="section">
+          <h2 style="margin-top:0">下單資料</h2>
+          <div class="form-row">
+            <div>
+              <label>下單人姓名</label>
+              <input type="text" id="requester" placeholder="請輸入姓名">
+            </div>
+            <div>
+              <label>所屬部門 / 公司</label>
+              <select id="department">
+                <option value="">請選擇</option>
+                <option>Office</option>
+                <option>Apple</option>
+                <option>Go Pro</option>
+                <option>Sennheiser</option>
+                <option>Sonova</option>
+                <option>Balluff</option>
+                <option>Lululemon</option>
+                <option>其他</option>
+              </select>
+            </div>
+            <div>
+              <label>下單日期</label>
+              <input type="date" id="orderDate">
+            </div>
+            <div>
+              <label>聯絡電話 / Email（選填）</label>
+              <input type="text" id="contact" placeholder="可選">
+            </div>
+          </div>
+          <div>
+            <label>備註</label>
+            <textarea id="notes" rows="2" placeholder="特殊要求或備註..."></textarea>
+          </div>
         </div>
-        <div>
-          <label>所屬部門 / 公司</label>
-          <select id="department">
-            <option value="">請選擇</option>
-            <option>Office</option>
-            <option>Apple</option>
-            <option>Go Pro</option>
-            <option>Sennheiser</option>
-            <option>Sonova</option>
-            <option>Balluff</option>
-            <option>Lululemon</option>
-            <option>其他</option>
-          </select>
-        </div>
-        <div>
-          <label>下單日期</label>
-          <input type="date" id="orderDate">
-        </div>
-        <div>
-          <label>聯絡電話 / Email（選填）</label>
-          <input type="text" id="contact" placeholder="可選">
-        </div>
-      </div>
-      <div>
-        <label>備註</label>
-        <textarea id="notes" rows="2" placeholder="特殊要求或備註..."></textarea>
-      </div>
-    </div>
 
-    <div class="section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <div class="search-box" style="flex:1; margin:0;">
-          <input type="text" id="search" placeholder="搜尋文具名稱...">
-        </div>
-        <button class="btn secondary" id="toggleAddItem" style="width:auto; margin-left:10px; padding:10px 16px;">＋ 新增文具</button>
-      </div>
-      <div class="add-item-form" id="addItemForm">
-        <h3 style="margin-top:0">新增文具項目（需上傳圖片）</h3>
-        <div class="form-row">
-          <div>
-            <label>分類</label>
-            <input type="text" id="newCat" placeholder="例如：筆、文具">
+        <div class="section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+            <div class="search-box" style="flex:1; margin:0; min-width:200px;">
+              <input type="text" id="search" placeholder="搜尋文具名稱...">
+            </div>
+            <button class="btn secondary" id="toggleAddItem" style="width:auto; padding:10px 16px;">＋ 新增文具</button>
           </div>
-          <div>
-            <label>名稱</label>
-            <input type="text" id="newName" placeholder="文具名稱">
+
+          <div class="add-item-form" id="addItemForm">
+            <h3 style="margin-top:0">新增文具項目</h3>
+            <div class="form-row">
+              <div>
+                <label>分類</label>
+                <select id="newCat"></select>
+              </div>
+              <div id="newCatCustomWrap" style="display:none">
+                <label>新分類名稱</label>
+                <input type="text" id="newCatCustom" placeholder="請輸入新分類名稱">
+              </div>
+              <div>
+                <label>名稱</label>
+                <input type="text" id="newName" placeholder="文具名稱">
+              </div>
+              <div>
+                <label>單位</label>
+                <input type="text" id="newUnit" placeholder="例如：Box、Piece">
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>產品連結（選填，預設為 Garret 產品頁）</label>
+                <input type="url" id="newLink" placeholder="https://www.garret.com.hk/product.php...">
+              </div>
+              <div>
+                <label>圖片網址（選填，可貼上 Garret 圖片連結）</label>
+                <input type="url" id="newImageUrl" placeholder="https://www.garret.com.hk/...">
+              </div>
+            </div>
+            <div style="margin:12px 0">
+              <label>或上傳本地商品圖片（若未填圖片網址則必填）</label>
+              <input type="file" id="newImage" accept="image/*">
+              <div id="imagePreview" style="margin-top:8px"></div>
+            </div>
+            <button class="btn" id="saveNewItem" style="margin-top:8px;">儲存新項目</button>
           </div>
-          <div>
-            <label>單位</label>
-            <input type="text" id="newUnit" placeholder="例如：Box、Piece">
-          </div>
+
+          <div class="filters" id="categoryFilters"></div>
+          <div class="item-list" id="itemList"></div>
         </div>
-        <div style="margin:12px 0">
-          <label>商品圖片（必填，自動壓縮以利雲端同步）</label>
-          <input type="file" id="newImage" accept="image/*">
-          <div id="imagePreview" style="margin-top:8px"></div>
-        </div>
-        <button class="btn" id="saveNewItem" style="margin-top:8px;">儲存新項目</button>
-      </div>
-      <div class="filters" id="categoryFilters"></div>
-      <div class="item-list" id="itemList"></div>
-      
-      <div class="summary" id="summary" style="display:none">
-        <h3>已選項目 (<span id="selectedCount">0</span>)</h3>
-        <div id="summaryItems"></div>
       </div>
 
-      <button class="btn" id="submitBtn" style="margin-top:16px">提交下單</button>
+      <!-- Right Sticky Column: Selected Items & Submit -->
+      <aside class="order-side-col">
+        <div class="side-card">
+          <h3>
+            <span>已選項目 (<span id="selectedCount">0</span>)</span>
+            <button class="btn secondary" id="clearCartBtn" style="width:auto; padding:4px 10px; font-size:0.8rem; display:none;">清空已選</button>
+          </h3>
+          <div id="sideEmpty" class="side-empty">尚未選擇任何文具項目<br>請在左側調整數量</div>
+          <div class="side-summary-list" id="summaryItems" style="display:none"></div>
+          <button class="btn" id="submitBtn">提交下單</button>
+        </div>
+      </aside>
     </div>
   </div>
 
@@ -330,11 +448,38 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   </div>
 </div>
 
+<!-- Edit Item Media/Link Modal -->
+<div class="login-modal" id="editItemModal">
+  <div class="login-box">
+    <h3 style="margin-top:0">設定文具圖片與連結</h3>
+    <p id="editItemTitle" style="color:var(--accent);font-weight:600;margin-bottom:12px;"></p>
+    <input type="hidden" id="editItemId">
+    <div style="margin-bottom:12px">
+      <label>產品網頁連結（預設為 Garret 產品目錄）</label>
+      <input type="url" id="editItemLink" placeholder="https://www.garret.com.hk/product.php">
+    </div>
+    <div style="margin-bottom:12px">
+      <label>圖片網址（可從 Garret 網站右鍵「複製圖片位址」貼上）</label>
+      <input type="url" id="editItemImageUrl" placeholder="https://www.garret.com.hk/...">
+    </div>
+    <div style="margin-bottom:16px">
+      <label>或上傳本地圖片覆蓋</label>
+      <input type="file" id="editItemImageFile" accept="image/*">
+      <div id="editItemPreview" style="margin-top:8px"></div>
+    </div>
+    <div style="display:flex; gap:8px">
+      <button class="btn" id="saveEditItemBtn">儲存設定</button>
+      <button class="btn secondary" id="cancelEditItemBtn">取消</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // 請將下方網址替換為你的 Google Apps Script 部署網址（結尾為 /exec）
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbykGtLyn0txJpqDPybn_BdJzL5-U_lMM8GD3Adbv6KWRbg5Ka5hKI8WeLdcNaXirg60hQ/exec';
+const GARRET_CATALOG_URL = 'https://www.garret.com.hk/product.php';
 
 const DEFAULT_ITEMS = [
   {"id":1,"category":"筆","name":"天鵝牌藍原子筆(10)","unit":"Box"},
@@ -371,7 +516,7 @@ const DEFAULT_ITEMS = [
   {"id":32,"category":"文具","name":"兩層文件架","unit":"Piece"},
   {"id":33,"category":"文具","name":"文件架駁腳(短鐵柱)","unit":"Pack"},
   {"id":34,"category":"剪裁用品","name":"鐵鎅刀(細)","unit":"Piece"},
-  {"id":35,"category":"剪裁用品","name":"剪刀","unit":"Piece"},
+  {"id":35,"category":"文具","name":"剪刀","unit":"Piece"},
   {"id":36,"category":"剪裁用品","name":"大刀片(10片)","unit":"Piece"},
   {"id":37,"category":"剪裁用品","name":"細刀片(10片)","unit":"Tube"},
   {"id":38,"category":"剪裁用品","name":"大鎅刀","unit":"Piece"},
@@ -436,6 +581,21 @@ let statusMonthFilter = 'all';
 let isLoggedIn = false;
 let selectedIds = new Set();
 
+function loadHiddenItemIds() {
+  try { return JSON.parse(localStorage.getItem('stationeryHiddenItemIds') || '[]'); }
+  catch { return []; }
+}
+function saveHiddenItemIds(ids) {
+  localStorage.setItem('stationeryHiddenItemIds', JSON.stringify(ids));
+}
+function loadItemOverrides() {
+  try { return JSON.parse(localStorage.getItem('stationeryItemOverrides') || '{}'); }
+  catch { return {}; }
+}
+function saveItemOverrides(map) {
+  localStorage.setItem('stationeryItemOverrides', JSON.stringify(map));
+}
+
 function setSyncBadge(text, state) {
   const el = document.getElementById('syncStatus');
   if (!el) return;
@@ -443,8 +603,12 @@ function setSyncBadge(text, state) {
   el.className = 'sync-status' + (state ? ' ' + state : '');
 }
 
+function isGasConfigured() {
+  return GAS_URL && !GAS_URL.includes('請貼上你的部署ID');
+}
+
 async function syncFromCloud(showToast = false) {
-  if (!GAS_URL || GAS_URL.includes('請貼上你的部署ID')) {
+  if (!isGasConfigured()) {
     setSyncBadge('尚未設定雲端網址', 'err');
     return;
   }
@@ -465,7 +629,7 @@ async function syncFromCloud(showToast = false) {
 }
 
 async function apiPost(payload) {
-  if (!GAS_URL || GAS_URL.includes('請貼上你的部署ID')) {
+  if (!isGasConfigured()) {
     throw new Error('尚未設定 GAS_URL');
   }
   setSyncBadge('儲存中...', '');
@@ -490,7 +654,25 @@ function saveCustomItems(items) {
   cachedCustomItems = items;
 }
 function getAllItems() {
-  return [...DEFAULT_ITEMS, ...loadCustomItems()];
+  const hiddenSet = new Set(loadHiddenItemIds().map(Number));
+  const overrides = loadItemOverrides();
+  const base = DEFAULT_ITEMS.map(item => {
+    const ov = overrides[item.id] || {};
+    return {
+      ...item,
+      image: ov.image !== undefined ? ov.image : (item.image || ''),
+      link: ov.link !== undefined ? ov.link : (item.link || GARRET_CATALOG_URL)
+    };
+  });
+  const custom = loadCustomItems().map(item => {
+    const ov = overrides[item.id] || {};
+    return {
+      ...item,
+      image: ov.image !== undefined ? ov.image : (item.image || ''),
+      link: ov.link !== undefined ? ov.link : (item.link || GARRET_CATALOG_URL)
+    };
+  });
+  return [...base, ...custom].filter(item => !hiddenSet.has(Number(item.id)));
 }
 
 function loadOrders() {
@@ -544,15 +726,45 @@ function checkLogin() {
   updateLoginUI();
 }
 
+function updateCategorySelectOptions() {
+  allItems = getAllItems();
+  const cats = [...new Set(allItems.map(i => i.category))];
+  const sel = document.getElementById('newCat');
+  if (!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('') +
+    '<option value="__NEW__">＋ 自訂新分類...</option>';
+  if (prev && (cats.includes(prev) || prev === '__NEW__')) {
+    sel.value = prev;
+  }
+  document.getElementById('newCatCustomWrap').style.display = sel.value === '__NEW__' ? 'block' : 'none';
+}
+
+document.getElementById('newCat').onchange = e => {
+  document.getElementById('newCatCustomWrap').style.display = e.target.value === '__NEW__' ? 'block' : 'none';
+};
+
 function renderCategories() {
   allItems = getAllItems();
   const cats = [...new Set(allItems.map(i => i.category))];
+  if (currentCategory !== '全部' && !cats.includes(currentCategory)) {
+    currentCategory = '全部';
+  }
   const el = document.getElementById('categoryFilters');
   el.innerHTML = `<button class="${currentCategory==='全部'?'active':''}" data-cat="全部">全部</button>` +
     cats.map(c => `<button class="${currentCategory===c?'active':''}" data-cat="${c}">${c}</button>`).join('');
   el.querySelectorAll('button').forEach(btn => {
     btn.onclick = () => { currentCategory = btn.dataset.cat; renderCategories(); renderItems(); };
   });
+  updateCategorySelectOptions();
+}
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function renderItems() {
@@ -563,23 +775,39 @@ function renderItems() {
     return catOk && searchOk;
   });
 
-  document.getElementById('itemList').innerHTML = filtered.map(item => `
-    <div class="item" data-id="${item.id}">
-      <div class="item-info">
-        ${item.image ? `<img src="${item.image}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;margin-right:8px;vertical-align:middle">` : ''}
-        <div style="display:inline-block;vertical-align:middle">
-          <div class="item-name">${item.name}</div>
-          <div class="item-meta">${item.category} · ${item.unit}</div>
+  document.getElementById('itemList').innerHTML = filtered.map(item => {
+    const itemLink = item.link || GARRET_CATALOG_URL;
+    const thumbHtml = item.image
+      ? `<a href="${escapeHtml(itemLink)}" target="_blank" rel="noopener noreferrer" title="查看產品頁"><img src="${escapeHtml(item.image)}" class="item-thumb" alt="${escapeHtml(item.name)}" onerror="this.style.display='none'"></a>`
+      : `<a href="${escapeHtml(itemLink)}" target="_blank" rel="noopener noreferrer" class="item-thumb-placeholder" title="前往 Garret 查看圖片">尚無<br>圖片</a>`;
+
+    return `
+      <div class="item" data-id="${item.id}">
+        <div class="item-info">
+          ${thumbHtml}
+          <div class="item-text">
+            <div class="item-name">
+              <a href="${escapeHtml(itemLink)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.name)}</a>
+            </div>
+            <div class="item-meta">
+              <span>${escapeHtml(item.category)} · ${escapeHtml(item.unit)}</span>
+              <a href="${escapeHtml(itemLink)}" target="_blank" rel="noopener noreferrer" class="item-link">Garret 參考 ↗</a>
+            </div>
+          </div>
+        </div>
+        <div class="qty-control">
+          <button data-action="minus" data-id="${item.id}">−</button>
+          <input type="number" min="0" value="${quantities[item.id]||0}" data-id="${item.id}" class="qty-input">
+          <button data-action="plus" data-id="${item.id}">+</button>
+        </div>
+        <div class="unit">${escapeHtml(item.unit)}</div>
+        <div class="item-actions">
+          <button class="icon-btn" data-edit-item="${item.id}" title="設定圖片與連結">圖/連</button>
+          <button class="icon-btn del" data-del-item="${item.id}" title="刪除此文具項目">刪除</button>
         </div>
       </div>
-      <div class="qty-control">
-        <button data-action="minus" data-id="${item.id}">−</button>
-        <input type="number" min="0" value="${quantities[item.id]||0}" data-id="${item.id}" class="qty-input">
-        <button data-action="plus" data-id="${item.id}">+</button>
-      </div>
-      <div class="unit">${item.unit}</div>
-    </div>
-  `).join('') || '<div class="empty">沒有符合的項目</div>';
+    `;
+  }).join('') || '<div class="empty">沒有符合的項目</div>';
 
   document.querySelectorAll('.qty-input').forEach(input => {
     input.onchange = input.oninput = e => {
@@ -598,28 +826,160 @@ function renderItems() {
       updateSummary();
     };
   });
+  document.querySelectorAll('[data-edit-item]').forEach(btn => {
+    btn.onclick = () => openEditItemModal(+btn.dataset.editItem);
+  });
+  document.querySelectorAll('[data-del-item]').forEach(btn => {
+    btn.onclick = () => deleteStationeryItem(+btn.dataset.delItem);
+  });
 }
+
+async function deleteStationeryItem(id) {
+  const item = getAllItems().find(i => Number(i.id) === Number(id));
+  if (!item) return;
+  if (!confirm(`確定要刪除文具項目「${item.name}」嗎？`)) return;
+
+  const isCustom = cachedCustomItems.some(c => Number(c.id) === Number(id));
+  if (isCustom) {
+    if (isGasConfigured()) {
+      try {
+        await apiPost({ action: 'deleteCustomItem', id });
+      } catch (e) {
+        console.warn('Cloud deleteCustomItem failed, hiding locally as well:', e);
+      }
+    }
+    cachedCustomItems = cachedCustomItems.filter(c => Number(c.id) !== Number(id));
+  }
+
+  const hidden = loadHiddenItemIds();
+  if (!hidden.includes(Number(id))) {
+    hidden.push(Number(id));
+    saveHiddenItemIds(hidden);
+  }
+
+  delete quantities[id];
+  renderCategories();
+  renderItems();
+  updateSummary();
+  toast(`已刪除文具「${item.name}」`);
+}
+
+function openEditItemModal(id) {
+  const item = getAllItems().find(i => Number(i.id) === Number(id));
+  if (!item) return;
+  document.getElementById('editItemId').value = item.id;
+  document.getElementById('editItemTitle').textContent = item.name;
+  document.getElementById('editItemLink').value = item.link || GARRET_CATALOG_URL;
+  document.getElementById('editItemImageUrl').value = (item.image && !item.image.startsWith('data:')) ? item.image : '';
+  document.getElementById('editItemImageFile').value = '';
+  document.getElementById('editItemPreview').innerHTML = item.image
+    ? `<img src="${escapeHtml(item.image)}" style="max-width:120px;max-height:120px;border-radius:8px">`
+    : '';
+  document.getElementById('editItemModal').classList.add('show');
+}
+
+document.getElementById('editItemImageFile').onchange = async e => {
+  const file = e.target.files[0];
+  const preview = document.getElementById('editItemPreview');
+  if (file) {
+    try {
+      const compressed = await compressImageDataUrl(file);
+      preview.innerHTML = `<img src="${compressed}" style="max-width:120px;max-height:120px;border-radius:8px">`;
+    } catch {
+      preview.innerHTML = '';
+    }
+  }
+};
+
+document.getElementById('saveEditItemBtn').onclick = async () => {
+  const id = +document.getElementById('editItemId').value;
+  const link = document.getElementById('editItemLink').value.trim() || GARRET_CATALOG_URL;
+  const imgUrl = document.getElementById('editItemImageUrl').value.trim();
+  const file = document.getElementById('editItemImageFile').files[0];
+
+  const item = getAllItems().find(i => Number(i.id) === Number(id));
+  if (!item) return;
+
+  let finalImage = item.image || '';
+  if (file) {
+    finalImage = await compressImageDataUrl(file);
+  } else if (imgUrl) {
+    finalImage = imgUrl;
+  }
+
+  const overrides = loadItemOverrides();
+  overrides[id] = { link, image: finalImage };
+  saveItemOverrides(overrides);
+
+  // If custom item and GAS configured, sync update
+  const customIdx = cachedCustomItems.findIndex(c => Number(c.id) === Number(id));
+  if (customIdx !== -1) {
+    cachedCustomItems[customIdx] = { ...cachedCustomItems[customIdx], link, image: finalImage };
+    if (isGasConfigured()) {
+      try {
+        await apiPost({ action: 'updateCustomItem', item: cachedCustomItems[customIdx] });
+      } catch (e) {
+        console.warn('Cloud updateCustomItem failed:', e);
+      }
+    }
+  }
+
+  document.getElementById('editItemModal').classList.remove('show');
+  renderItems();
+  toast('已更新文具圖片與連結');
+};
+
+document.getElementById('cancelEditItemBtn').onclick = () => {
+  document.getElementById('editItemModal').classList.remove('show');
+};
 
 function updateSummary() {
   allItems = getAllItems();
   const selected = allItems.filter(i => quantities[i.id] > 0);
-  const summary = document.getElementById('summary');
   const countEl = document.getElementById('selectedCount');
   const itemsEl = document.getElementById('summaryItems');
+  const emptyEl = document.getElementById('sideEmpty');
+  const clearCartBtn = document.getElementById('clearCartBtn');
+
+  countEl.textContent = selected.length;
 
   if (selected.length === 0) {
-    summary.style.display = 'none';
+    emptyEl.style.display = 'block';
+    itemsEl.style.display = 'none';
+    clearCartBtn.style.display = 'none';
     return;
   }
-  summary.style.display = 'block';
-  countEl.textContent = selected.length;
+
+  emptyEl.style.display = 'none';
+  itemsEl.style.display = 'block';
+  clearCartBtn.style.display = 'inline-block';
+
   itemsEl.innerHTML = selected.map(i => `
     <div class="summary-item">
-      <span>${i.name}</span>
-      <span>${quantities[i.id]} ${i.unit}</span>
+      <span class="summary-item-name">${escapeHtml(i.name)}</span>
+      <span class="summary-item-right">
+        <span>${quantities[i.id]} ${escapeHtml(i.unit)}</span>
+        <button class="summary-remove" data-remove-cart="${i.id}" title="移除此項">✕</button>
+      </span>
     </div>
   `).join('');
+
+  itemsEl.querySelectorAll('[data-remove-cart]').forEach(btn => {
+    btn.onclick = () => {
+      const id = +btn.dataset.removeCart;
+      quantities[id] = 0;
+      const input = document.querySelector(`.qty-input[data-id="${id}"]`);
+      if (input) input.value = 0;
+      updateSummary();
+    };
+  });
 }
+
+document.getElementById('clearCartBtn').onclick = () => {
+  quantities = {};
+  renderItems();
+  updateSummary();
+};
 
 async function switchTab(tab) {
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -718,9 +1078,9 @@ function renderRecords() {
               <div class="order-header">
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
                   ${isLoggedIn ? `<label class="checkbox-label"><input type="checkbox" class="order-check" data-id="${o.id}" ${checked}> 選取</label>` : ''}
-                  <strong>${o.requester || '未填姓名'}</strong>
-                  <span class="badge">${o.department || '未選部門'}</span>
-                  <span class="badge ${getStatusClass(status)}">${status}</span>
+                  <strong>${escapeHtml(o.requester || '未填姓名')}</strong>
+                  <span class="badge">${escapeHtml(o.department || '未選部門')}</span>
+                  <span class="badge ${getStatusClass(status)}">${escapeHtml(status)}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                   <span style="color:var(--muted);font-size:0.85rem">${date}</span>
@@ -731,10 +1091,10 @@ function renderRecords() {
                   ` : `<span style="font-size:0.85rem;color:var(--muted)">（登入後可改狀態）</span>`}
                 </div>
               </div>
-              ${o.contact ? `<div style="font-size:0.85rem;color:var(--muted)">聯絡：${o.contact}</div>` : ''}
-              ${o.notes ? `<div style="font-size:0.85rem;margin:6px 0">備註：${o.notes}</div>` : ''}
+              ${o.contact ? `<div style="font-size:0.85rem;color:var(--muted)">聯絡：${escapeHtml(o.contact)}</div>` : ''}
+              ${o.notes ? `<div style="font-size:0.85rem;margin:6px 0">備註：${escapeHtml(o.notes)}</div>` : ''}
               <div style="margin-top:8px">
-                ${o.items.map(it => `<div style="font-size:0.9rem">${it.name} × ${it.qty} ${it.unit}</div>`).join('')}
+                ${o.items.map(it => `<div style="font-size:0.9rem">${escapeHtml(it.name)} × ${it.qty} ${escapeHtml(it.unit)}</div>`).join('')}
               </div>
               ${isLoggedIn ? `<button class="btn secondary" style="margin-top:10px;width:auto;padding:6px 12px;font-size:0.85rem" data-del="${o.id}">刪除這筆</button>` : '<div style="margin-top:8px;font-size:0.8rem;color:var(--muted)">登入後可刪除</div>'}
             </div>
@@ -859,14 +1219,14 @@ function renderStatusQuery() {
       <div class="order-card">
         <div class="order-header">
           <div>
-            <strong>${o.requester || '未填姓名'}</strong>
-            <span class="badge">${o.department || '未選部門'}</span>
-            <span class="badge ${getStatusClass(status)}">${status}</span>
+            <strong>${escapeHtml(o.requester || '未填姓名')}</strong>
+            <span class="badge">${escapeHtml(o.department || '未選部門')}</span>
+            <span class="badge ${getStatusClass(status)}">${escapeHtml(status)}</span>
           </div>
           <span style="color:var(--muted);font-size:0.85rem">${date}</span>
         </div>
         <div style="font-size:0.9rem;margin-top:6px">
-          ${o.items.map(it => `${it.name} × ${it.qty} ${it.unit}`).join('　')}
+          ${o.items.map(it => `${escapeHtml(it.name)} × ${it.qty} ${escapeHtml(it.unit)}`).join(' ')}
         </div>
       </div>
     `;
@@ -944,7 +1304,9 @@ document.getElementById('exportBackupBtn').onclick = () => {
     version: 1,
     exportedAt: new Date().toISOString(),
     orders: loadOrders(),
-    customItems: loadCustomItems()
+    customItems: loadCustomItems(),
+    itemOverrides: loadItemOverrides(),
+    hiddenItemIds: loadHiddenItemIds()
   };
   const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
   const a = document.createElement('a');
@@ -1075,8 +1437,9 @@ document.querySelectorAll('.tabs button').forEach(btn => {
   btn.onclick = () => switchTab(btn.dataset.tab);
 });
 
-// Add item (no login required, image compressed before upload)
+// Add item (category dropdown, optional link & image URL or local upload)
 document.getElementById('toggleAddItem').onclick = () => {
+  updateCategorySelectOptions();
   document.getElementById('addItemForm').classList.toggle('show');
 };
 
@@ -1128,37 +1491,44 @@ document.getElementById('newImage').onchange = async e => {
 };
 
 document.getElementById('saveNewItem').onclick = async () => {
-  const cat = document.getElementById('newCat').value.trim();
+  const catSel = document.getElementById('newCat').value;
+  const cat = catSel === '__NEW__' ? document.getElementById('newCatCustom').value.trim() : catSel;
   const name = document.getElementById('newName').value.trim();
   const unit = document.getElementById('newUnit').value.trim();
+  const link = document.getElementById('newLink').value.trim() || GARRET_CATALOG_URL;
+  const imageUrl = document.getElementById('newImageUrl').value.trim();
   const fileInput = document.getElementById('newImage');
   const file = fileInput.files[0];
 
   if (!cat || !name || !unit) return toast('請填寫分類、名稱、單位');
-  if (!file) return toast('請上傳商品圖片');
+  if (!file && !imageUrl) return toast('請上傳商品圖片或填寫圖片網址');
 
   const btn = document.getElementById('saveNewItem');
   btn.disabled = true;
   btn.textContent = '儲存中...';
 
   try {
-    const compressedImage = await compressImageDataUrl(file);
-    const newItem = { id: Date.now(), category: cat, name, unit, image: compressedImage };
-    await apiPost({ action: 'addCustomItem', item: newItem });
+    const finalImage = file ? await compressImageDataUrl(file) : imageUrl;
+    const newItem = { id: Date.now(), category: cat, name, unit, link, image: finalImage };
+    if (isGasConfigured()) {
+      await apiPost({ action: 'addCustomItem', item: newItem });
+    }
 
     const custom = loadCustomItems();
     custom.push(newItem);
     saveCustomItems(custom);
 
-    document.getElementById('newCat').value = '';
+    document.getElementById('newCatCustom').value = '';
     document.getElementById('newName').value = '';
     document.getElementById('newUnit').value = '';
+    document.getElementById('newLink').value = '';
+    document.getElementById('newImageUrl').value = '';
     fileInput.value = '';
     document.getElementById('imagePreview').innerHTML = '';
     document.getElementById('addItemForm').classList.remove('show');
     renderCategories();
     renderItems();
-    toast('已新增文具項目並同步至雲端');
+    toast('已新增文具項目');
   } catch (e) {
     setSyncBadge('雲端連線失敗', 'err');
     toast('新增文具失敗，請檢查網路或網址設定');
